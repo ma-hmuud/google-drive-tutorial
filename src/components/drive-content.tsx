@@ -1,21 +1,20 @@
 "use client"
 
-import type { FileSystemItem } from "~/app/page"
+import type { Item, Folder } from "~/app/page"
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 
 interface DriveContentProps {
-  items: FileSystemItem[]
-  currentPath: FileSystemItem[]
-  onNavigateToFolder: (folder: FileSystemItem) => void
-  onNavigateUp: () => void
+  items: Item[]
+  currentPath: Folder[]
+  onNavigateToFolder: (folder: Folder) => void
   onNavigateToRoot: () => void
 }
 
 export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigateToRoot }: DriveContentProps) {
   const getFileIcon = (name: string, type: string) => {
-    if (type === "folder") return <Folder className="h-5 w-5 text-muted-foreground" />
+    if (type === "folder") return <FolderIcon className="h-5 w-5 text-muted-foreground" />
 
     const ext = name.split(".").pop()?.toLowerCase()
     if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext ?? "")) {
@@ -27,10 +26,10 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
     return <FileText className="h-5 w-5 text-muted-foreground" />
   }
 
-  const handleItemClick = (item: FileSystemItem) => {
+  const handleItemClick = (item: Item) => {
     if (item.type === "folder") {
       onNavigateToFolder(item)
-    } else if (item.fileUrl) {
+    } else if (item.type === "file" && item.fileUrl) {
       window.open(item.fileUrl, "_blank")
     }
   }
@@ -46,10 +45,17 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
         <Button variant="ghost" size="sm" onClick={onNavigateToRoot} className="h-8 px-2 text-sm hover:bg-secondary">
           My Drive
         </Button>
-        {currentPath.map((pathItem, index) => (
+        {currentPath.map((pathItem) => (
           <div key={pathItem.id} className="flex items-center gap-2">
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-sm hover:bg-secondary">
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sm hover:bg-secondary" onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              if (pathItem.id !== currentPath[currentPath.length - 1]!.id) {
+                currentPath.slice(0, currentPath.indexOf(pathItem))
+                onNavigateToFolder(pathItem)
+              }
+            }}>
               {pathItem.name}
             </Button>
           </div>
@@ -76,7 +82,7 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
         {items.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
-              <Folder className="mx-auto h-16 w-16 text-muted-foreground" />
+              <FolderIcon className="mx-auto h-16 w-16 text-muted-foreground" />
               <p className="mt-4 text-lg font-medium text-foreground">This folder is empty</p>
               <p className="mt-1 text-sm text-muted-foreground">Upload files or create folders to get started</p>
             </div>
@@ -128,7 +134,7 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
                     <span className="font-medium text-foreground">{item.name}</span>
                   </div>
                   <span className="text-sm text-muted-foreground">{item.modified}</span>
-                  <span className="w-20 text-sm text-muted-foreground">{item.size}</span>
+                  <span className="w-20 text-sm text-muted-foreground">{item.type === "file" ? item.size : "—"}</span>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
