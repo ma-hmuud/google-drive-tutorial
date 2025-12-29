@@ -1,20 +1,29 @@
 "use client"
 
-import type { Item, Folder } from "~/app/page"
+import type { DriveFile, DriveFolder } from "~/types/drive"
 import { Button } from "~/components/ui/button"
 import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 
 interface DriveContentProps {
-  items: Item[]
-  currentPath: Folder[]
-  onNavigateToFolder: (folder: Folder) => void
+  folders: DriveFolder[]
+  files: DriveFile[]
+  currentPath: DriveFolder[]
+  onNavigateToFolder: (folder: DriveFolder) => void
   onNavigateToRoot: () => void
 }
 
-export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigateToRoot }: DriveContentProps) {
-  const getFileIcon = (name: string, type: string) => {
-    if (type === "folder") return <FolderIcon className="h-5 w-5 text-muted-foreground" />
+export function DriveContent({
+  folders,
+  files,
+  currentPath,
+  onNavigateToFolder,
+  onNavigateToRoot,
+}: DriveContentProps) {
+  const getFileIcon = (name: string, type: "file" | "folder") => {
+    if (type === "folder") {
+      return <FolderIcon className="h-5 w-5 text-muted-foreground" />
+    }
 
     const ext = name.split(".").pop()?.toLowerCase()
     if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext ?? "")) {
@@ -26,11 +35,31 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
     return <FileText className="h-5 w-5 text-muted-foreground" />
   }
 
-  const handleItemClick = (item: Item) => {
-    if (item.type === "folder") {
-      onNavigateToFolder(item)
-    } else if (item.type === "file" && item.fileUrl) {
-      window.open(item.fileUrl, "_blank")
+  const formatFileSize = (size: number) => {
+    if (size <= 0) {
+      return "0 B"
+    }
+
+    const units = ["B", "KB", "MB", "GB", "TB"]
+    let value = size
+    let unitIndex = 0
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024
+      unitIndex++
+    }
+
+    const displayValue = value >= 10 || unitIndex === 0 ? Math.round(value) : Number(value.toFixed(1))
+    return `${displayValue} ${units[unitIndex]}`
+  }
+
+  const handleFolderClick = (folder: DriveFolder) => {
+    onNavigateToFolder(folder)
+  }
+
+  const handleFileClick = (file: DriveFile) => {
+    if (file.fileUrl) {
+      window.open(file.fileUrl, "_blank")
     }
   }
 
@@ -79,7 +108,7 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
 
       {/* Content Area */}
       <div className="flex-1 overflow-auto p-6">
-        {items.length === 0 ? (
+        {folders.length === 0 && files.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
               <FolderIcon className="mx-auto h-16 w-16 text-muted-foreground" />
@@ -90,66 +119,62 @@ export function DriveContent({ items, currentPath, onNavigateToFolder, onNavigat
         ) : (
           <div className="space-y-1">
             {/* Folders */}
-            {items
-              .filter((item) => item.type === "folder")
-              .map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => handleItemClick(item)}
-                  className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
-                >
-                  <div className="flex items-center gap-3 flex-1">
-                    {getFileIcon(item.name, item.type)}
-                    <span className="font-medium text-foreground">{item.name}</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{item.modified}</span>
-                  <span className="w-20 text-sm text-muted-foreground">—</span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Open</DropdownMenuItem>
-                      <DropdownMenuItem>Share</DropdownMenuItem>
-                      <DropdownMenuItem>Download</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {folders.map((folder) => (
+              <div
+                key={folder.id}
+                onClick={() => handleFolderClick(folder)}
+                className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  {getFileIcon(folder.name, folder.type)}
+                  <span className="font-medium text-foreground">{folder.name}</span>
                 </div>
-              ))}
+                <span className="text-sm text-muted-foreground">{folder.modified}</span>
+                <span className="w-20 text-sm text-muted-foreground">—</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>Open</DropdownMenuItem>
+                    <DropdownMenuItem>Share</DropdownMenuItem>
+                    <DropdownMenuItem>Download</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ))}
 
             {/* Files */}
-            {items
-              .filter((item) => item.type === "file")
-              .map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => handleItemClick(item)}
-                  className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
-                >
-                  <div className="flex items-center gap-3 flex-1">
-                    {getFileIcon(item.name, item.type)}
-                    <span className="font-medium text-foreground">{item.name}</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{item.modified}</span>
-                  <span className="w-20 text-sm text-muted-foreground">{item.type === "file" ? item.size : "—"}</span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Open</DropdownMenuItem>
-                      <DropdownMenuItem>Share</DropdownMenuItem>
-                      <DropdownMenuItem>Download</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {files.map((file) => (
+              <div
+                key={file.id}
+                onClick={() => handleFileClick(file)}
+                className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  {getFileIcon(file.name, file.type)}
+                  <span className="font-medium text-foreground">{file.name}</span>
                 </div>
-              ))}
+                <span className="text-sm text-muted-foreground">{file.modified}</span>
+                <span className="w-20 text-sm text-muted-foreground">{formatFileSize(file.size)}</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>Open</DropdownMenuItem>
+                    <DropdownMenuItem>Share</DropdownMenuItem>
+                    <DropdownMenuItem>Download</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ))}
           </div>
         )}
       </div>
