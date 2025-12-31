@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical, PlusIcon } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, PlusIcon } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";

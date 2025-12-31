@@ -1,12 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { DriveHeader } from "~/components/drive-header"
 import { DriveContent } from "~/components/drive-content"
 import type { DriveFolder, DriveFile } from "~/types/drive"
 import type { files, folders } from "~/server/db/schema"
-
-const EMPTY_PATH: DriveFolder[] = []
 
 export default function DriveContents(props: {
   folders: typeof folders.$inferSelect[]
