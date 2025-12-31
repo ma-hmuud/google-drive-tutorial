@@ -1,7 +1,6 @@
 import { Search, Menu } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 
 export function DriveHeader() {
