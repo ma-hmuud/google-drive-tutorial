@@ -9,11 +9,13 @@ import Link from "next/link";
 interface DriveContentProps {
   folders: DriveFolder[]
   files: DriveFile[]
+  parents: DriveFolder[]
 }
 
 export function DriveContent({
   folders,
   files,
+  parents,
 }: DriveContentProps) {
   const getFileIcon = (name: string, type: "file" | "folder") => {
     if (type === "folder") {
@@ -59,14 +61,14 @@ export function DriveContent({
         <Link href={"/f/1"} className="h-6 px-2 mt-1 text-sm text-foreground">
           My Drive
         </Link>
-        {folders.map((folder) => (
+        {parents.map((folder) => (folder.id !== BigInt(1) && (
           <div key={folder.id} className="flex items-center gap-2">
             <ChevronRight className="h-4 w-4" />
             <Link href={`/f/${folder.id}`} className="h-6 px-2 mt-1 text-sm text-foreground">
               {folder.name}
             </Link>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* Toolbar */}
