@@ -9,7 +9,7 @@ import {
 
 const tableCreator = singlestoreTableCreator((name) => `ma-drive_${name}`);
 
-export const files = tableCreator(
+export const filesTable = tableCreator(
   "files_table",
   {
     id: bigint("id", { mode: "bigint" }).primaryKey().autoincrement(),
@@ -24,7 +24,7 @@ export const files = tableCreator(
   },
 );
 
-export const folders = tableCreator(
+export const foldersTable = tableCreator(
   "folders_table",
   {
     id: bigint("id", { mode: "bigint" }).primaryKey().autoincrement(),
