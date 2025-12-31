@@ -6,4 +6,7 @@
 - [x] move folder state to url
 - [x] add auth
 - [x] add uploading file func
-- [ ] upload file to a folder
+- [x] upload file to a folder
+- [ ] add analytics
+- [ ] updating or deleting a file
+- [ ] home page
