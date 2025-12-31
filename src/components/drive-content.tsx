@@ -1,10 +1,12 @@
-"use client"
+"use client";
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, PlusIcon } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
+import { UploadButton } from "./uploadthing";
+import { useRouter } from "next/navigation";
 
 interface DriveContentProps {
   folders: DriveFolder[]
@@ -50,9 +52,7 @@ export function DriveContent({
     return `${displayValue} ${units[unitIndex]}`
   }
 
-  const handleUpload = () => {
-    alert("Upload functionality would be implemented here!")
-  }
+  const navigation = useRouter();
 
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
@@ -70,11 +70,6 @@ export function DriveContent({
           </div>
         )))}
       </div>
-
-      {/* Toolbar */}
-      <Button onClick={handleUpload} size="icon" className="absolute right-7 bottom-7 bg-primary hover:bg-primary/90 rounded-full">
-        <PlusIcon className="h-6 w-6" />
-      </Button>
 
       {/* Content Area */}
       <div className="flex-1 overflow-auto p-6">
@@ -120,7 +115,8 @@ export function DriveContent({
             {files.map((file) => (
               <Link
                 key={file.id}
-                href={`/f/${file.fileUrl}`}
+                href={file.fileUrl}
+                target="_blank"
                 className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
               >
                 <div className="flex items-center gap-3 flex-1">
@@ -146,6 +142,9 @@ export function DriveContent({
             ))}
           </div>
         )}
+        <UploadButton className="absolute bottom-10 right-1/2" endpoint="imageUploader" onClientUploadComplete={() => {
+          navigation.refresh();
+        }} />
       </div>
     </main>
   )
