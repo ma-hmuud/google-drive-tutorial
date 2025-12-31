@@ -6,7 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs"
 
 export const metadata: Metadata = {
   title: "My Drive",
-  description: "My Drive",
+  description: "A simple file manager for your files",
 }
 
 export default function RootLayout({

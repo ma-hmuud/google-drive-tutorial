@@ -2,6 +2,7 @@ import { Search, Menu } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
+import Image from "next/image"
 
 export function DriveHeader() {
   return (
@@ -11,7 +12,7 @@ export function DriveHeader() {
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded bg-primary" />
+          <Image src={"/logo.png"} alt="Drive" className="rounded bg-primary" width={32} height={32} />
           <h1 className="text-xl font-medium text-foreground">Drive</h1>
         </div>
       </div>
