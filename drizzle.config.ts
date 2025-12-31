@@ -13,5 +13,5 @@ export default {
     database: String(env.SINGLESTORE_DB_NAME),
     ssl: {},
   },
-  tablesFilter: ["ma-drive_*"] as string[],
+  // tablesFilter: ["ma-drive_*"] as string[],
 } satisfies Config;

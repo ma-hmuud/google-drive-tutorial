@@ -7,13 +7,15 @@ async function createFile(input: { file: {
     fileUrl: string;
     parent: bigint;
     modified: string;
+    ownerId: string;
 }; userId: string }) {
   return db.insert(filesTable).values({
     name: input.file.name,
     size: BigInt(input.file.size),
     fileUrl: input.file.fileUrl,
-    parent: BigInt(1),
+    parent: input.file.parent,
     modified: input.file.modified,
+    ownerId: input.userId,
   });
 }
 
