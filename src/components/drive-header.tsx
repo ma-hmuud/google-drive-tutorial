@@ -2,6 +2,7 @@ import { Search, Menu } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 
 export function DriveHeader() {
   return (
@@ -24,10 +25,17 @@ export function DriveHeader() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="/placeholder.svg" alt="User" />
-          <AvatarFallback className="bg-primary text-primary-foreground">U</AvatarFallback>
-        </Avatar>
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton>
+            <Button>
+              Sign Up
+            </Button>
+          </SignUpButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </header>
   )

@@ -4,5 +4,5 @@
 
 - [x] setup the database
 - [x] move folder state to url
-- [ ] add auth
+- [x] add auth
 - [ ] add uploading file func
