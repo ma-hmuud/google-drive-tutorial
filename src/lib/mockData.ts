@@ -1,16 +1,16 @@
 import type { DriveFile, DriveFolder } from "~/types/drive";
 
 export const folderIds = {
-  root: 1,
-  projects: 2,
-  documents: 3,
-  photos: 4,
-  archives: 5,
-  webDev: 6,
-  mobile: 7,
-  design: 8,
-  vacation: 9,
-  family: 10,
+  root: BigInt(1),
+  projects: BigInt(2),
+  documents: BigInt(3),
+  photos: BigInt(4),
+  archives: BigInt(5),
+  webDev: BigInt(6),
+  mobile: BigInt(7),
+  design: BigInt(8),
+  vacation: BigInt(9),
+  family: BigInt(10),
 } as const;
 
 export const mockFolders: DriveFolder[] = [
@@ -92,7 +92,7 @@ export const mockFolders: DriveFolder[] = [
 export const mockFiles: DriveFile[] = [
   // Root level files
   {
-    id: 101,
+    id: BigInt(101),
     name: "README.md",
     type: "file",
     size: 2458,
@@ -101,7 +101,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.root,
   },
   {
-    id: 102,
+    id: BigInt(102),
     name: "Quick Notes.txt",
     type: "file",
     size: 1229,
@@ -111,7 +111,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Documents folder files
   {
-    id: 103,
+    id: BigInt(103),
     name: "Resume_2024.pdf",
     type: "file",
     size: 250880,
@@ -120,7 +120,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.documents,
   },
   {
-    id: 104,
+    id: BigInt(104),
     name: "Cover_Letter.docx",
     type: "file",
     size: 89088,
@@ -129,7 +129,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.documents,
   },
   {
-    id: 105,
+    id: BigInt(105),
     name: "Budget_2024.xlsx",
     type: "file",
     size: 159744,
@@ -138,7 +138,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.documents,
   },
   {
-    id: 106,
+    id: BigInt(106),
     name: "Q4_Presentation.pptx",
     type: "file",
     size: 3355443,
@@ -148,7 +148,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Web Development folder files
   {
-    id: 107,
+    id: BigInt(107),
     name: "portfolio-design.fig",
     type: "file",
     size: 5033165,
@@ -157,7 +157,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.webDev,
   },
   {
-    id: 108,
+    id: BigInt(108),
     name: "API_Documentation.pdf",
     type: "file",
     size: 913408,
@@ -166,7 +166,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.webDev,
   },
   {
-    id: 109,
+    id: BigInt(109),
     name: "wireframes_v2.sketch",
     type: "file",
     size: 2202010,
@@ -175,7 +175,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.webDev,
   },
   {
-    id: 110,
+    id: BigInt(110),
     name: "homepage_mockup.psd",
     type: "file",
     size: 16357786,
@@ -185,7 +185,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Mobile Apps folder files
   {
-    id: 111,
+    id: BigInt(111),
     name: "app_icon.png",
     type: "file",
     size: 131072,
@@ -194,7 +194,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.mobile,
   },
   {
-    id: 112,
+    id: BigInt(112),
     name: "splash_screen.png",
     type: "file",
     size: 466944,
@@ -203,7 +203,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.mobile,
   },
   {
-    id: 113,
+    id: BigInt(113),
     name: "app_v1.2.3.apk",
     type: "file",
     size: 29779558,
@@ -213,7 +213,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Design Files folder files
   {
-    id: 114,
+    id: BigInt(114),
     name: "company_logo.svg",
     type: "file",
     size: 46080,
@@ -222,7 +222,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.design,
   },
   {
-    id: 115,
+    id: BigInt(115),
     name: "Brand_Guidelines.pdf",
     type: "file",
     size: 5872026,
@@ -231,7 +231,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.design,
   },
   {
-    id: 116,
+    id: BigInt(116),
     name: "color_palette.ase",
     type: "file",
     size: 12288,
@@ -241,7 +241,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Vacation Photos folder files
   {
-    id: 117,
+    id: BigInt(117),
     name: "beach_sunset.jpg",
     type: "file",
     size: 3355443,
@@ -250,7 +250,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.vacation,
   },
   {
-    id: 118,
+    id: BigInt(118),
     name: "ocean_view.jpg",
     type: "file",
     size: 2936013,
@@ -259,7 +259,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.vacation,
   },
   {
-    id: 119,
+    id: BigInt(119),
     name: "mountain_hike.jpg",
     type: "file",
     size: 4299162,
@@ -268,7 +268,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.vacation,
   },
   {
-    id: 120,
+    id: BigInt(120),
     name: "city_lights.jpg",
     type: "file",
     size: 3670016,
@@ -278,7 +278,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Family Photos folder files
   {
-    id: 121,
+    id: BigInt(121),
     name: "christmas_2024.jpg",
     type: "file",
     size: 3040870,
@@ -287,7 +287,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.family,
   },
   {
-    id: 122,
+    id: BigInt(122),
     name: "birthday_party.jpg",
     type: "file",
     size: 3250586,
@@ -296,7 +296,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.family,
   },
   {
-    id: 123,
+    id: BigInt(123),
     name: "thanksgiving.jpg",
     type: "file",
     size: 2831155,
@@ -306,7 +306,7 @@ export const mockFiles: DriveFile[] = [
   },
   // Archives folder files
   {
-    id: 124,
+    id: BigInt(124),
     name: "backup_2024.zip",
     type: "file",
     size: 1288490189,
@@ -315,7 +315,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.archives,
   },
   {
-    id: 125,
+    id: BigInt(125),
     name: "old_project_files.rar",
     type: "file",
     size: 897581056,
@@ -324,7 +324,7 @@ export const mockFiles: DriveFile[] = [
     parent: folderIds.archives,
   },
   {
-    id: 126,
+    id: BigInt(126),
     name: "archive_2023.7z",
     type: "file",
     size: 2576980378,

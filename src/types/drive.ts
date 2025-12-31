@@ -1,17 +1,17 @@
 export interface DriveFile {
-  id: number;
+  id: bigint;
   name: string;
   type: "file";
   size: number;
   modified: string;
   fileUrl: string;
-  parent: number;
+  parent: bigint;
 }
 
 export interface DriveFolder {
-  id: number;
+  id: bigint;
   name: string;
   type: "folder";
   modified: string;
-  parent: number | null;
+  parent: bigint | null;
 }

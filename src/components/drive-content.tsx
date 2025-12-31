@@ -1,9 +1,9 @@
 "use client"
 
-import type { DriveFile, DriveFolder } from "~/types/drive"
 import { Button } from "~/components/ui/button"
 import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
+import type { DriveFile, DriveFolder } from "~/types/drive";
 
 interface DriveContentProps {
   folders: DriveFolder[]
@@ -53,11 +53,11 @@ export function DriveContent({
     return `${displayValue} ${units[unitIndex]}`
   }
 
-  const handleFolderClick = (folder: DriveFolder) => {
+  const handleFolderClick = (folder: typeof folders[0]) => {
     onNavigateToFolder(folder)
   }
 
-  const handleFileClick = (file: DriveFile) => {
+  const handleFileClick = (file: typeof files[0]) => {
     if (file.fileUrl) {
       window.open(file.fileUrl, "_blank")
     }
@@ -119,14 +119,14 @@ export function DriveContent({
         ) : (
           <div className="space-y-1">
             {/* Folders */}
-            {folders.map((folder) => (
+            {folders.map((folder) => (folder.id !== BigInt(1) && (
               <div
                 key={folder.id}
                 onClick={() => handleFolderClick(folder)}
                 className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
               >
                 <div className="flex items-center gap-3 flex-1">
-                  {getFileIcon(folder.name, folder.type)}
+                  {getFileIcon(folder.name, "folder")}
                   <span className="font-medium text-foreground">{folder.name}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">{folder.modified}</span>
@@ -145,7 +145,7 @@ export function DriveContent({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            ))}
+            )))}
 
             {/* Files */}
             {files.map((file) => (
@@ -155,11 +155,11 @@ export function DriveContent({
                 className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
               >
                 <div className="flex items-center gap-3 flex-1">
-                  {getFileIcon(file.name, file.type)}
+                  {getFileIcon(file.name, "file")}
                   <span className="font-medium text-foreground">{file.name}</span>
                 </div>
                 <span className="text-sm text-muted-foreground">{file.modified}</span>
-                <span className="w-20 text-sm text-muted-foreground">{formatFileSize(file.size)}</span>
+                <span className="w-20 text-sm text-muted-foreground">{formatFileSize(Number(file.size))}</span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
