@@ -8,6 +8,7 @@ export default function DriveContents(props: {
   folders: DriveFolder[]
   files: DriveFile[],
   parents: DriveFolder[]
+  currentFolderId: number
 }) {
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -17,6 +18,7 @@ export default function DriveContents(props: {
           folders={props.folders}
           files={props.files}
           parents={props.parents}
+          currentFolderId={props.currentFolderId}
         />
       </div>
     </div>

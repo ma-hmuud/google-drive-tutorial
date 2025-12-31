@@ -12,12 +12,14 @@ interface DriveContentProps {
   folders: DriveFolder[]
   files: DriveFile[]
   parents: DriveFolder[]
+  currentFolderId: number
 }
 
 export function DriveContent({
   folders,
   files,
   parents,
+  currentFolderId,
 }: DriveContentProps) {
   const getFileIcon = (name: string, type: "file" | "folder") => {
     if (type === "folder") {
@@ -58,17 +60,14 @@ export function DriveContent({
     <main className="flex flex-1 flex-col overflow-hidden">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 border-b border-border bg-card px-6 py-2">
-        <Link href={"/f/1"} className="h-6 px-2 mt-1 text-sm text-foreground">
-          My Drive
-        </Link>
-        {parents.map((folder) => (folder.id !== BigInt(1) && (
+        {parents.map((folder) => (
           <div key={folder.id} className="flex items-center gap-2">
             <ChevronRight className="h-4 w-4" />
             <Link href={`/f/${folder.id}`} className="h-6 px-2 mt-1 text-sm text-foreground">
-              {folder.name}
+              {folder.parent === null ? "My Drive" : folder.name}
             </Link>
           </div>
-        )))}
+        ))}
       </div>
 
       {/* Content Area */}
@@ -84,7 +83,7 @@ export function DriveContent({
         ) : (
           <div className="space-y-1">
             {/* Folders */}
-            {folders.map((folder) => (folder.id !== BigInt(1) && (
+            {folders.map((folder) => (folder.id !== BigInt(currentFolderId) && (
               <Link
                 key={folder.id}
                 href={`/f/${folder.id}`}
@@ -142,7 +141,7 @@ export function DriveContent({
             ))}
           </div>
         )}
-        <UploadButton className="absolute bottom-10 right-1/2" endpoint="imageUploader" onClientUploadComplete={() => {
+        <UploadButton className="absolute bottom-10 right-1/2" endpoint="driveUploader" input={{ folderId: currentFolderId }} onClientUploadComplete={() => {
           navigation.refresh();
         }} />
       </div>

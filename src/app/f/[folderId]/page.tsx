@@ -18,5 +18,5 @@ export default async function FolderPage(props: {
     QUERIES.getAllParentsForFolder(BigInt(parsedFolderId))
   ]);
 
-  return <DriveContents folders={folders as unknown as DriveFolder[]} files={files as unknown as DriveFile[]} parents={parents as unknown as DriveFolder[]} />;
+  return <DriveContents folders={folders as unknown as DriveFolder[]} files={files as unknown as DriveFile[]} parents={parents as unknown as DriveFolder[]} currentFolderId={parsedFolderId} />;
 }

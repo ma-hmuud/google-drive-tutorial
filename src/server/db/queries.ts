@@ -33,14 +33,20 @@ function getFolders(folderId: bigint) {
 }
 
 function getFiles(folderId: bigint) {
+  return db.select().from(filesTable).where(eq(filesTable.parent, folderId));
+}
+
+function getFolderById(folderId: bigint) {
   return db
     .select()
-    .from(filesTable)
-    .where(eq(filesTable.parent, folderId));
+    .from(foldersTable)
+    .where(eq(foldersTable.id, folderId))
+    .then(([folder]) => folder);
 }
 
 export const QUERIES = {
-    getAllParentsForFolder,
-    getFolders,
-    getFiles,
-}
+  getAllParentsForFolder,
+  getFolders,
+  getFiles,
+  getFolderById,
+};
