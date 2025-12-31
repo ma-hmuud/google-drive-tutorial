@@ -1,24 +1,19 @@
 "use client"
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, Grid3x3, List, MoreVertical, PlusIcon } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
+import Link from "next/link";
 
 interface DriveContentProps {
   folders: DriveFolder[]
   files: DriveFile[]
-  currentPath: DriveFolder[]
-  onNavigateToFolder: (folder: DriveFolder) => void
-  onNavigateToRoot: () => void
 }
 
 export function DriveContent({
   folders,
   files,
-  currentPath,
-  onNavigateToFolder,
-  onNavigateToRoot,
 }: DriveContentProps) {
   const getFileIcon = (name: string, type: "file" | "folder") => {
     if (type === "folder") {
@@ -53,16 +48,6 @@ export function DriveContent({
     return `${displayValue} ${units[unitIndex]}`
   }
 
-  const handleFolderClick = (folder: typeof folders[0]) => {
-    onNavigateToFolder(folder)
-  }
-
-  const handleFileClick = (file: typeof files[0]) => {
-    if (file.fileUrl) {
-      window.open(file.fileUrl, "_blank")
-    }
-  }
-
   const handleUpload = () => {
     alert("Upload functionality would be implemented here!")
   }
@@ -70,41 +55,24 @@ export function DriveContent({
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 border-b border-border bg-card px-6 py-3">
-        <Button variant="ghost" size="sm" onClick={onNavigateToRoot} className="h-8 px-2 text-sm hover:bg-secondary">
+      <div className="flex items-center gap-2 border-b border-border bg-card px-6 py-2">
+        <Link href={"/f/1"} className="h-6 px-2 mt-1 text-sm text-foreground">
           My Drive
-        </Button>
-        {currentPath.map((pathItem) => (
-          <div key={pathItem.id} className="flex items-center gap-2">
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-sm hover:bg-secondary" onClick={(e) => {
-              e.stopPropagation()
-              e.preventDefault()
-              if (pathItem.id !== currentPath[currentPath.length - 1]!.id) {
-                currentPath.slice(0, currentPath.indexOf(pathItem))
-                onNavigateToFolder(pathItem)
-              }
-            }}>
-              {pathItem.name}
-            </Button>
+        </Link>
+        {folders.map((folder) => (
+          <div key={folder.id} className="flex items-center gap-2">
+            <ChevronRight className="h-4 w-4" />
+            <Link href={`/f/${folder.id}`} className="h-6 px-2 mt-1 text-sm text-foreground">
+              {folder.name}
+            </Link>
           </div>
         ))}
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-border bg-card px-6 py-2">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <List className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Grid3x3 className="h-4 w-4" />
-          </Button>
-        </div>
-        <Button onClick={handleUpload} size="sm" className="bg-primary hover:bg-primary/90">
-          Upload
-        </Button>
-      </div>
+      <Button onClick={handleUpload} size="icon" className="absolute right-7 bottom-7 bg-primary hover:bg-primary/90 rounded-full">
+        <PlusIcon className="h-6 w-6" />
+      </Button>
 
       {/* Content Area */}
       <div className="flex-1 overflow-auto p-6">
@@ -120,9 +88,9 @@ export function DriveContent({
           <div className="space-y-1">
             {/* Folders */}
             {folders.map((folder) => (folder.id !== BigInt(1) && (
-              <div
+              <Link
                 key={folder.id}
-                onClick={() => handleFolderClick(folder)}
+                href={`/f/${folder.id}`}
                 className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
               >
                 <div className="flex items-center gap-3 flex-1">
@@ -144,14 +112,13 @@ export function DriveContent({
                     <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </Link>
             )))}
-
             {/* Files */}
             {files.map((file) => (
-              <div
+              <Link
                 key={file.id}
-                onClick={() => handleFileClick(file)}
+                href={`/f/${file.fileUrl}`}
                 className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
               >
                 <div className="flex items-center gap-3 flex-1">
@@ -173,7 +140,7 @@ export function DriveContent({
                     <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </Link>
             ))}
           </div>
         )}
