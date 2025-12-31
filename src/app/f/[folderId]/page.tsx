@@ -1,6 +1,6 @@
-import DriveContents from "~/app/drive-contents";
 import { QUERIES } from "~/server/db/queries";
 import type { DriveFile, DriveFolder } from "~/types/drive";
+import DriveContents from "./drive-contents";
 
 export default async function FolderPage(props: {
   params: Promise<{ folderId: string }>

@@ -17,7 +17,6 @@ export const env = createEnv({
     SINGLESTORE_PORT: z.coerce.number(),
     SINGLESTORE_DB_NAME: z.string(),
     CLERK_SECRET_KEY: z.string(),
-    CLERK_PUBLISHABLE_KEY: z.string(),
     UPLOADTHING_TOKEN: z.string(),
   },
 
@@ -28,6 +27,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
   },
 
   /**
@@ -42,9 +42,9 @@ export const env = createEnv({
     SINGLESTORE_PASSWORD: process.env.SINGLESTORE_PASSWORD,
     SINGLESTORE_PORT: process.env.SINGLESTORE_PORT,
     SINGLESTORE_DB_NAME: process.env.SINGLESTORE_DB_NAME,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
