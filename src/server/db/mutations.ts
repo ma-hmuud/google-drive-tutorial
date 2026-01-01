@@ -57,7 +57,19 @@ async function createRootFolder(ownerId: string) {
   return rootFolder;
 }
 
+async function createFolder(folder: { name: string, parentId: bigint }, userId: string) {
+  const [newFolder] = await db.insert(foldersTable).values({
+    name: folder.name,
+    parent: folder.parentId,
+    ownerId: userId,
+    modified: new Date().toISOString(),
+  }).$returningId();
+
+  return newFolder;
+}
+
 export const MUTATIONS = {
   createFile,
   createRootFolder,
+  createFolder,
 };

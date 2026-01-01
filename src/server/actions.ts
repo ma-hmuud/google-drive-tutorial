@@ -5,6 +5,10 @@ import { db } from "./db";
 import { filesTable } from "./db/schema";
 import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
+import { redirect } from "next/navigation";
+import { MUTATIONS } from "./db/mutations";
+import { z } from "zod";
+import { folderSchema } from "~/lib/schemas";
 
 const utApi = new UTApi();
 
@@ -13,7 +17,6 @@ export async function deleteFile(fileId: number) {
   if (!session.userId) {
     throw new Error("Unauthorized");
   }
-
 
   const file = await db
     .select()
@@ -40,4 +43,27 @@ export async function deleteFile(fileId: number) {
   await db.delete(filesTable).where(eq(filesTable.id, file[0].id));
 
   return { success: true };
+}
+
+export async function createFolderAction(folderId: number, formData: FormData) {
+  "use server";
+  const session = await auth();
+  if (!session.userId) return { error: "You must be signed in." };
+
+  const result = folderSchema.safeParse({ name: formData.get("name") });
+  if (!result.success) {
+    return {
+      error:
+        result.error.flatten().fieldErrors.name?.[0] ?? "Invalid folder name.",
+    };
+  }
+
+  const newFolder = await MUTATIONS.createFolder(
+    { name: result.data.name, parentId: BigInt(folderId) },
+    session.userId,
+  );
+  if (!newFolder)
+    return { error: "Something went wrong while creating the folder." };
+
+  redirect(`/f/${newFolder.id}`);
 }

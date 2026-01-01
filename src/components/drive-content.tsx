@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, Trash2 } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, Trash2, Plus, FolderPlus } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
@@ -60,15 +60,26 @@ export function DriveContent({
   return (
     <main className="relative flex flex-1 flex-col overflow-hidden">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 border-b border-border bg-card px-6 py-2">
-        {parents.map((folder) => (
-          <div key={folder.id} className="flex items-center gap-2">
-            <ChevronRight className="h-4 w-4" />
-            <Link href={`/f/${folder.id}`} className="h-6 px-2 mt-1 text-sm text-foreground">
-              {folder.parent === null ? "My Drive" : folder.name}
-            </Link>
+      <div className="flex items-center justify-between gap-2 border-b border-border bg-card px-6 py-2">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            {parents.map((folder) => (
+              <div key={folder.id} className="flex items-center gap-2">
+                <ChevronRight className="h-4 w-4" />
+                <Link href={`/f/${folder.id}`} className="h-6 px-2 mt-1 text-sm text-foreground">
+                  {folder.parent === null ? "My Drive" : folder.name}
+                </Link>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <div>
+          <Button variant="ghost" size="icon" className="h-10 w-36 bg-secondary hover:bg-secondary/80" onClick={() => {
+            navigation.push(`/f/${currentFolderId}/new-folder`);
+          }}>
+            <FolderPlus className="h-4 w-4" /> New Folder
+          </Button>
+        </div>
       </div>
 
       {/* Table Header */}
