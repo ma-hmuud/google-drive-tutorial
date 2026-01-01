@@ -2,7 +2,7 @@ import "server-only";
 
 import { db } from "~/server/db";
 import { foldersTable, filesTable } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 async function getAllParentsForFolder(folderId: bigint) {
   const parents = [];
@@ -49,9 +49,18 @@ function getFolderById(folderId: bigint) {
     .then(([folder]) => folder);
 }
 
+function getRootFolderForUser(userId: string) {
+  return db
+    .select()
+    .from(foldersTable)
+    .where(and(eq(foldersTable.ownerId, userId), isNull(foldersTable.parent)))
+    .then((res) => res[0]);
+}
+
 export const QUERIES = {
   getAllParentsForFolder,
   getFolders,
   getFiles,
   getFolderById,
+  getRootFolderForUser,
 };
