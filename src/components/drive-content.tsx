@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, Trash2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
 import { UploadButton } from "./uploadthing";
 import { useRouter } from "next/navigation";
+import { deleteFile } from "~/server/actions";
 
 interface DriveContentProps {
   folders: DriveFolder[]
@@ -116,7 +117,7 @@ export function DriveContent({
                 key={file.id}
                 href={file.fileUrl}
                 target="_blank"
-                className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary"
+                className="flex cursor-pointer items-center gap-4 rounded-lg px-4 py-3 hover:bg-secondary group"
               >
                 <div className="flex items-center gap-3 flex-1">
                   {getFileIcon(file.name, "file")}
@@ -124,19 +125,32 @@ export function DriveContent({
                 </div>
                 <span className="text-sm text-muted-foreground">{file.modified}</span>
                 <span className="w-20 text-sm text-muted-foreground">{formatFileSize(Number(file.size))}</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Open</DropdownMenuItem>
-                    <DropdownMenuItem>Share</DropdownMenuItem>
-                    <DropdownMenuItem>Download</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <span className="ml-auto flex items-center gap-1">
+                  <Button
+                    className="cursor-pointer"
+                    variant="ghost"
+                    aria-label="Delete file"
+                    size="icon"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (
+                        window.confirm(
+                          `Are you sure you want to delete "${file.name}"? This action cannot be undone.`
+                        )
+                      ) {
+                        try {
+                          await deleteFile(Number(file.id));
+                          navigation.refresh();
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </span>
               </Link>
             ))}
           </div>
