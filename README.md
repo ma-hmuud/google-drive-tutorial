@@ -10,6 +10,6 @@
 - [x] deleting a file
 - [x] home page
 - [x] create folder
-- [ ] update folder name
+- [x] update folder name
 - [ ] delete folder and its folders and files
 - [ ] add searching and filtering
