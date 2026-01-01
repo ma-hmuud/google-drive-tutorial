@@ -1,18 +1,43 @@
 "use client";
 
+import { useEffect } from "react";
 import { useFormState } from "react-dom";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createFolderAction } from "~/server/actions";
 
-const initialState = { error: undefined };
+type FolderFormState = {
+  error?: string;
+  success?: {
+    folderId: number;
+    name: string;
+  };
+};
+
+const initialState: FolderFormState = { error: undefined, success: undefined };
 
 export function NewFolderForm({ folderId }: { folderId: number }) {
-  const [state, formAction] = useFormState(
-    (prevState: { error?: string }, formData: FormData) =>
+  const router = useRouter();
+  const [state, formAction] = useFormState<FolderFormState, FormData>(
+    (_prevState: FolderFormState, formData: FormData) =>
       createFolderAction(folderId, formData),
-    initialState as { error: string | undefined }
+    initialState,
   );
+
+  useEffect(() => {
+    if (!state.success) return;
+
+    toast.success(`Folder "${state.success.name}" created successfully`, {
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
+    router.push(`/f/${state.success.folderId}`);
+  }, [state.success, router]);
 
   return (
     <form

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { UploadButton } from "./uploadthing";
 import { useRouter } from "next/navigation";
 import { deleteFile, deleteFolder } from "~/server/actions";
+import { toast } from "react-hot-toast";
 
 interface DriveContentProps {
   folders: DriveFolder[]
@@ -158,8 +159,26 @@ export function DriveContent({
                                   `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`
                                 )
                               ) {
-                                await deleteFolder(Number(folder.id));
-                                navigation.refresh();
+                                try {
+                                  await deleteFolder(Number(folder.id));
+                                  toast.success(`"${folder.name}" deleted successfully`, {
+                                    style: {
+                                      borderRadius: '10px',
+                                      background: '#333',
+                                      color: '#fff',
+                                    },
+                                  });
+                                  navigation.refresh();
+                                } catch (err) {
+                                  toast.error("Failed to delete folder", {
+                                    style: {
+                                      borderRadius: '10px',
+                                      background: '#333',
+                                      color: '#fff'
+                                    }
+                                  });
+                                  console.error(err);
+                                }
                               }
                             }}>Delete</DropdownMenuItem>
                           </DropdownMenuContent>
@@ -211,7 +230,21 @@ export function DriveContent({
                           try {
                             await deleteFile(Number(file.id));
                             navigation.refresh();
+                            toast.success(`"${file.name}" deleted successfully`, {
+                              style: {
+                                borderRadius: '10px',
+                                background: '#333',
+                                color: '#fff'
+                              }
+                            });
                           } catch (err) {
+                            toast.error("Failed to delete file", {
+                              style: {
+                                borderRadius: '10px',
+                                background: '#333',
+                                color: '#fff'
+                              }
+                            });
                             console.error(err);
                           }
                         }
@@ -231,6 +264,13 @@ export function DriveContent({
           input={{ folderId: currentFolderId }}
           onClientUploadComplete={() => {
             navigation.refresh();
+            toast.success(`File uploaded successfully`, {
+              style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+              },
+            });
           }}
         />
       </div>

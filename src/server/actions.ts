@@ -5,11 +5,18 @@ import { db } from "./db";
 import { filesTable, foldersTable } from "./db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
-import { redirect } from "next/navigation";
 import { MUTATIONS } from "./db/mutations";
 import { folderSchema } from "~/lib/schemas";
 
 const utApi = new UTApi();
+
+type FolderActionResult = {
+  error?: string;
+  success?: {
+    folderId: number;
+    name: string;
+  };
+};
 
 export async function deleteFile(fileId: number) {
   const session = await auth();
@@ -91,7 +98,7 @@ export async function deleteFolder(folderId: number) {
 
     db.delete(foldersTable).where(eq(foldersTable.id, BigInt(folderId))),
   ]);
-  
+
   return { success: true };
 }
 
@@ -109,7 +116,10 @@ function getAllChildrenFile(folderId: number) {
     .where(eq(filesTable.parent, BigInt(folderId)));
 }
 
-export async function createFolderAction(folderId: number, formData: FormData) {
+export async function createFolderAction(
+  folderId: number,
+  formData: FormData,
+): Promise<FolderActionResult> {
   "use server";
   const session = await auth();
   if (!session.userId) return { error: "You must be signed in." };
@@ -129,10 +139,18 @@ export async function createFolderAction(folderId: number, formData: FormData) {
   if (!newFolder)
     return { error: "Something went wrong while creating the folder." };
 
-  redirect(`/f/${newFolder.id}`);
+  return {
+    success: {
+      folderId: Number(newFolder.id),
+      name: result.data.name,
+    },
+  };
 }
 
-export async function editFolderAction(folderId: number, formData: FormData) {
+export async function editFolderAction(
+  folderId: number,
+  formData: FormData,
+): Promise<FolderActionResult> {
   "use server";
   const session = await auth();
   if (!session.userId) return { error: "You must be signed in." };
@@ -152,5 +170,10 @@ export async function editFolderAction(folderId: number, formData: FormData) {
   if (affectedRows === 0)
     return { error: "Something went wrong while updating the folder." };
 
-  redirect(`/f/${folderId}`);
+  return {
+    success: {
+      folderId,
+      name: result.data.name,
+    },
+  };
 }
