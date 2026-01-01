@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "~/components/ui/button"
-import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, Trash2, Plus, FolderPlus } from "lucide-react"
+import { ChevronRight, Folder as FolderIcon, FileText, ImageIcon, FileArchive, MoreVertical, Trash2, FolderPlus } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/components/ui/dropdown-menu"
 import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
@@ -97,7 +97,7 @@ export function DriveContent({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto px-6 py-4">
+      <div className="px-6 py-4">
         {folders.length === 0 && files.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
@@ -147,9 +147,9 @@ export function DriveContent({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Open</DropdownMenuItem>
-                            <DropdownMenuItem>Share</DropdownMenuItem>
-                            <DropdownMenuItem>Download</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              navigation.push(`/f/${folder.id}/edit-folder`);
+                            }}>Edit</DropdownMenuItem>
                             <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

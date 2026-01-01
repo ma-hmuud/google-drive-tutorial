@@ -1,5 +1,6 @@
 import { filesTable, foldersTable } from "./schema";
 import { db } from ".";
+import { and, eq } from "drizzle-orm";
 
 async function createFile(input: {
   file: {
@@ -57,19 +58,43 @@ async function createRootFolder(ownerId: string) {
   return rootFolder;
 }
 
-async function createFolder(folder: { name: string, parentId: bigint }, userId: string) {
-  const [newFolder] = await db.insert(foldersTable).values({
-    name: folder.name,
-    parent: folder.parentId,
-    ownerId: userId,
-    modified: new Date().toISOString(),
-  }).$returningId();
+async function createFolder(
+  folder: { name: string; parentId: bigint },
+  userId: string,
+) {
+  const [newFolder] = await db
+    .insert(foldersTable)
+    .values({
+      name: folder.name,
+      parent: folder.parentId,
+      ownerId: userId,
+      modified: new Date().toISOString(),
+    })
+    .$returningId();
 
   return newFolder;
+}
+
+async function updateFolder(
+  folder: { id: bigint; name: string },
+  userId: string,
+) {
+  const [updatedFolder] = await db
+    .update(foldersTable)
+    .set({
+      name: folder.name,
+      modified: new Date().toISOString(),
+    })
+    .where(
+      and(eq(foldersTable.id, folder.id), eq(foldersTable.ownerId, userId)),
+    );
+
+  return updatedFolder.affectedRows;
 }
 
 export const MUTATIONS = {
   createFile,
   createRootFolder,
   createFolder,
+  updateFolder,
 };

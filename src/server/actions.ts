@@ -7,7 +7,6 @@ import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { redirect } from "next/navigation";
 import { MUTATIONS } from "./db/mutations";
-import { z } from "zod";
 import { folderSchema } from "~/lib/schemas";
 
 const utApi = new UTApi();
@@ -66,4 +65,27 @@ export async function createFolderAction(folderId: number, formData: FormData) {
     return { error: "Something went wrong while creating the folder." };
 
   redirect(`/f/${newFolder.id}`);
+}
+
+export async function editFolderAction(folderId: number, formData: FormData) {
+  "use server";
+  const session = await auth();
+  if (!session.userId) return { error: "You must be signed in." };
+
+  const result = folderSchema.safeParse({ name: formData.get("name") });
+  if (!result.success) {
+    return {
+      error:
+        result.error.flatten().fieldErrors.name?.[0] ?? "Invalid folder name.",
+    };
+  }
+
+  const affectedRows = await MUTATIONS.updateFolder(
+    { id: BigInt(folderId), name: result.data.name },
+    session.userId,
+  );
+  if (affectedRows === 0)
+    return { error: "Something went wrong while updating the folder." };
+
+  redirect(`/f/${folderId}`);
 }
