@@ -8,7 +8,8 @@
 - [x] add uploading file func
 - [x] upload file to a folder
 - [x] deleting a file
-- [ ] home page
+- [x] home page
 - [ ] create folder
-- [ ] update folder
-- [ ] delete folder
+- [ ] update folder name
+- [ ] delete folder and its folders and files
+- [ ] add searching and filtering
