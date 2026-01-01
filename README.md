@@ -7,6 +7,8 @@
 - [x] add auth
 - [x] add uploading file func
 - [x] upload file to a folder
-- [ ] add analytics
-- [ ] updating or deleting a file
+- [x] deleting a file
 - [ ] home page
+- [ ] create folder
+- [ ] update folder
+- [ ] delete folder
