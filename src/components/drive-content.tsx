@@ -58,7 +58,7 @@ export function DriveContent({
   const navigation = useRouter();
 
   return (
-    <main className="flex flex-1 flex-col overflow-hidden">
+    <main className="relative flex flex-1 flex-col overflow-hidden">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 border-b border-border bg-card px-6 py-2">
         {parents.map((folder) => (
@@ -94,7 +94,7 @@ export function DriveContent({
                   {getFileIcon(folder.name, "folder")}
                   <span className="font-medium text-foreground">{folder.name}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">{folder.modified}</span>
+                <span className="text-sm text-muted-foreground">{(new Date(folder.modified)).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })}</span>
                 <span className="w-20 text-sm text-muted-foreground">—</span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -123,7 +123,7 @@ export function DriveContent({
                   {getFileIcon(file.name, "file")}
                   <span className="font-medium text-foreground">{file.name}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">{file.modified}</span>
+                <span className="text-sm text-muted-foreground">{(new Date(file.modified)).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })}</span>
                 <span className="w-20 text-sm text-muted-foreground">{formatFileSize(Number(file.size))}</span>
                 <span className="ml-auto flex items-center gap-1">
                   <Button
@@ -155,7 +155,7 @@ export function DriveContent({
             ))}
           </div>
         )}
-        <UploadButton className="absolute bottom-10 right-1/2" endpoint="driveUploader" input={{ folderId: currentFolderId }} onClientUploadComplete={() => {
+        <UploadButton className="my-20 mx-auto" endpoint="driveUploader" input={{ folderId: currentFolderId }} onClientUploadComplete={() => {
           navigation.refresh();
         }} />
       </div>

@@ -1,25 +1,5 @@
 import { SignInButton } from "@clerk/nextjs";
-import { Cloud, Lock, ShieldCheck, Sparkles } from "lucide-react";
-
 import { Button } from "~/components/ui/button";
-
-const highlights = [
-    {
-        icon: ShieldCheck,
-        title: "Precision security",
-        description: "Zero-knowledge encryption and continuous monitoring keep your files safe.",
-    },
-    {
-        icon: Lock,
-        title: "Advanced access",
-        description: "Granular roles and approvals make collaboration controlled and fast.",
-    },
-    {
-        icon: Sparkles,
-        title: "AI summaries",
-        description: "Turn long PDFs into key takeaways you can action in seconds.",
-    },
-];
 
 export default function SignIn() {
     return (

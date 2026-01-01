@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import Image from "next/image"
+import Link from "next/link"
 
 export function DriveHeader() {
   return (
@@ -11,10 +12,10 @@ export function DriveHeader() {
         <Button variant="ghost" size="icon" className="lg:hidden">
           <Menu className="h-5 w-5" />
         </Button>
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image src={"/logo.png"} alt="Drive" className="rounded bg-primary" width={32} height={32} />
           <h1 className="text-xl font-medium text-foreground">Drive</h1>
-        </div>
+        </Link>
       </div>
 
       <div className="flex flex-1 items-center justify-center px-4">
