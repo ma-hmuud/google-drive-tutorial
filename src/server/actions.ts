@@ -2,8 +2,8 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
-import { filesTable } from "./db/schema";
-import { and, eq } from "drizzle-orm";
+import { filesTable, foldersTable } from "./db/schema";
+import { and, eq, inArray } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { redirect } from "next/navigation";
 import { MUTATIONS } from "./db/mutations";
@@ -42,6 +42,71 @@ export async function deleteFile(fileId: number) {
   await db.delete(filesTable).where(eq(filesTable.id, file[0].id));
 
   return { success: true };
+}
+
+export async function deleteFolder(folderId: number) {
+  const session = await auth();
+  if (!session.userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const folder = await db
+    .select()
+    .from(foldersTable)
+    .where(
+      and(
+        eq(foldersTable.id, BigInt(folderId)),
+        eq(foldersTable.ownerId, session.userId),
+      ),
+    );
+
+  if (!folder || folder.length === 0 || !folder[0]) {
+    throw new Error("Folder not found");
+  }
+
+  const childrenFilesPromise = getAllChildrenFile(folderId);
+  const childrenFoldersPromise = getAllChildrenFolder(folderId);
+  const [childrenFolders, childrenFiles] = await Promise.all([
+    childrenFoldersPromise,
+    childrenFilesPromise,
+  ]);
+
+  if (childrenFolders.length > 0) {
+    throw new Error("Folder has children folders. Delete them first.");
+  }
+
+  await Promise.all([
+    utApi.deleteFiles(
+      childrenFiles.map((file) =>
+        file.fileUrl.replace("https://lgi46d9iqy.ufs.sh/f/", ""),
+      ),
+    ),
+
+    db.delete(filesTable).where(
+      inArray(
+        filesTable.id,
+        childrenFiles.map((file) => file.id),
+      ),
+    ),
+
+    db.delete(foldersTable).where(eq(foldersTable.id, BigInt(folderId))),
+  ]);
+  
+  return { success: true };
+}
+
+function getAllChildrenFolder(folderId: number) {
+  return db
+    .select()
+    .from(foldersTable)
+    .where(eq(foldersTable.parent, BigInt(folderId)));
+}
+
+function getAllChildrenFile(folderId: number) {
+  return db
+    .select()
+    .from(filesTable)
+    .where(eq(filesTable.parent, BigInt(folderId)));
 }
 
 export async function createFolderAction(folderId: number, formData: FormData) {

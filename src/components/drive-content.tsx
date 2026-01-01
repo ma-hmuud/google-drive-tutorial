@@ -7,7 +7,7 @@ import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
 import { UploadButton } from "./uploadthing";
 import { useRouter } from "next/navigation";
-import { deleteFile } from "~/server/actions";
+import { deleteFile, deleteFolder } from "~/server/actions";
 
 interface DriveContentProps {
   folders: DriveFolder[]
@@ -150,7 +150,18 @@ export function DriveContent({
                             <DropdownMenuItem onClick={() => {
                               navigation.push(`/f/${folder.id}/edit-folder`);
                             }}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive" onClick={async (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (
+                                window.confirm(
+                                  `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`
+                                )
+                              ) {
+                                await deleteFolder(Number(folder.id));
+                                navigation.refresh();
+                              }
+                            }}>Delete</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
