@@ -11,5 +11,5 @@
 - [x] home page
 - [x] create folder
 - [x] update folder name
-- [ ] delete folder and its folders and files
+- [x] delete folder and its files
 - [ ] add searching and filtering
