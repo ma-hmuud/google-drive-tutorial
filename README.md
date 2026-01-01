@@ -12,5 +12,5 @@
 - [x] create folder
 - [x] update folder name
 - [x] delete folder and its files
-- [ ] add toaster when uploading, create folder, rename it or delete
+- [x] add toaster when uploading, create folder, rename it or delete
 - [ ] add searching and filtering
