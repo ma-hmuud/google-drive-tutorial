@@ -38,8 +38,18 @@ export async function deleteFile(fileId: number) {
     throw new Error("File not found");
   }
 
-  const deleteResult = await utApi.deleteFiles([
-    file[0].fileUrl.replace("https://lgi46d9iqy.ufs.sh/f/", ""),
+  const [, deleteResult] = await Promise.all([
+    db
+      .update(foldersTable)
+      .set({
+        modified: new Date().toISOString(),
+      })
+      .where(eq(foldersTable.id, file[0].parent))
+      .then((res) => res[0]),
+
+    utApi.deleteFiles([
+      file[0].fileUrl.replace("https://lgi46d9iqy.ufs.sh/f/", ""),
+    ]),
   ]);
 
   if (!deleteResult.success) {
@@ -97,6 +107,14 @@ export async function deleteFolder(folderId: number) {
     ),
 
     db.delete(foldersTable).where(eq(foldersTable.id, BigInt(folderId))),
+
+    // case the deleted folder in the root don't update
+    folder[0].parent
+      ? db
+          .update(foldersTable)
+          .set({ modified: new Date().toISOString() })
+          .where(eq(foldersTable.id, folder[0].parent))
+      : undefined,
   ]);
 
   return { success: true };
@@ -141,7 +159,7 @@ export async function createFolderAction(
 
   return {
     success: {
-      folderId: Number(newFolder.id),
+      folderId: folderId,
       name: result.data.name,
     },
   };
@@ -163,16 +181,16 @@ export async function editFolderAction(
     };
   }
 
-  const affectedRows = await MUTATIONS.updateFolder(
+  const parentId = await MUTATIONS.updateFolder(
     { id: BigInt(folderId), name: result.data.name },
     session.userId,
   );
-  if (affectedRows === 0)
+  if (!parentId)
     return { error: "Something went wrong while updating the folder." };
 
   return {
     success: {
-      folderId,
+      folderId: Number(parentId),
       name: result.data.name,
     },
   };

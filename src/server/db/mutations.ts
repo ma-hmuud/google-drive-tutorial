@@ -13,6 +13,13 @@ async function createFile(input: {
   };
   userId: string;
 }) {
+  await db
+    .update(foldersTable)
+    .set({
+      modified: new Date().toISOString(),
+    })
+    .where(eq(foldersTable.id, input.file.parent));
+
   return db.insert(filesTable).values({
     name: input.file.name,
     size: BigInt(input.file.size),
@@ -79,17 +86,28 @@ async function updateFolder(
   folder: { id: bigint; name: string },
   userId: string,
 ) {
-  const [updatedFolder] = await db
-    .update(foldersTable)
-    .set({
-      name: folder.name,
-      modified: new Date().toISOString(),
-    })
-    .where(
-      and(eq(foldersTable.id, folder.id), eq(foldersTable.ownerId, userId)),
-    );
+  const [parentId] = await Promise.all([
+    db
+      .select({
+        parent: foldersTable.parent,
+      })
+      .from(foldersTable)
+      .where(
+        and(eq(foldersTable.id, folder.id), eq(foldersTable.ownerId, userId)),
+      )
+      .then(([row]) => row?.parent),
+    db
+      .update(foldersTable)
+      .set({
+        name: folder.name,
+        modified: new Date().toISOString(),
+      })
+      .where(
+        and(eq(foldersTable.id, folder.id), eq(foldersTable.ownerId, userId)),
+      ),
+  ]);
 
-  return updatedFolder.affectedRows;
+  return parentId;
 }
 
 export const MUTATIONS = {
