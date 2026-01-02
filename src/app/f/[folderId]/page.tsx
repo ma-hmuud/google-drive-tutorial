@@ -20,8 +20,6 @@ export default async function FolderPage(props: {
   }
   const parsedSearch = search?.trim() ? String(search) : undefined;
 
-  console.log("Search: ", search);
-
   const [folders, files, parents] = await Promise.all([
     parsedSearch
       ? QUERIES.getFoldersWithSearch(session.userId, parsedSearch)
