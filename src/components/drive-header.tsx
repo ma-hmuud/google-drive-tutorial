@@ -1,9 +1,9 @@
 import { Search, Menu } from "lucide-react"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
+import SearchInput from "./search-input"
 
 export function DriveHeader() {
   return (
@@ -21,7 +21,7 @@ export function DriveHeader() {
       <div className="flex flex-1 items-center justify-center px-4">
         <div className="relative w-full max-w-2xl">
           <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <Input type="search" placeholder="Search in Drive" className="w-full bg-secondary pl-10" />
+          <SearchInput />
         </div>
       </div>
 

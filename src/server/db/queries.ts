@@ -2,7 +2,7 @@ import "server-only";
 
 import { db } from "~/server/db";
 import { foldersTable, filesTable } from "~/server/db/schema";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, like } from "drizzle-orm";
 
 async function getAllParentsForFolder(folderId: bigint) {
   const parents = [];
@@ -33,11 +33,37 @@ function getFolders(folderId: bigint) {
     .orderBy(foldersTable.id);
 }
 
+function getFoldersWithSearch(ownerId: string, search?: string) {
+  return db
+    .select()
+    .from(foldersTable)
+    .where(
+      and(
+        eq(foldersTable.ownerId, ownerId),
+        search ? like(foldersTable.name, `%${search}%`) : undefined,
+      ),
+    )
+    .orderBy(foldersTable.id);
+}
+
 function getFiles(folderId: bigint) {
   return db
     .select()
     .from(filesTable)
     .where(eq(filesTable.parent, folderId))
+    .orderBy(filesTable.id);
+}
+
+function getFilesWithSearch(ownerId: string, search?: string) {
+  return db
+    .select()
+    .from(filesTable)
+    .where(
+      and(
+        eq(filesTable.ownerId, ownerId),
+        search ? like(filesTable.name, `%${search}%`) : undefined,
+      ),
+    )
     .orderBy(filesTable.id);
 }
 
@@ -63,4 +89,6 @@ export const QUERIES = {
   getFiles,
   getFolderById,
   getRootFolderForUser,
+  getFoldersWithSearch,
+  getFilesWithSearch,
 };
