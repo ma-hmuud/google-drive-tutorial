@@ -55,6 +55,6 @@ Google Drive–style application built with the modern Next.js stack. It demonst
 - [x] Toast notifications for upload/create/edit/delete
 - [x] Client-side handling of folder success responses
 - [x] Responsive drive layout (table + mobile cards)
-- [ ] Add searching and filtering
+- [x] Add searching and filtering
 - [ ] Bulk selection + multi-delete
 - [ ] Share links / collaboration
