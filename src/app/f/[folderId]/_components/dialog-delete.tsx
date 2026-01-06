@@ -39,8 +39,7 @@ export default function DialogDelete({
             setOpenDialog(false);
             navigation.refresh();
         } catch (error) {
-            console.error(error);
-            toast.error(`Failed to delete this ${itemType}`, {
+            toast.error((error as Error).message, {
                 style: {
                     borderRadius: "10px",
                     background: "#333",
