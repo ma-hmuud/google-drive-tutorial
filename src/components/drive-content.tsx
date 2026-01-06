@@ -21,11 +21,11 @@ import type { DriveFile, DriveFolder } from "~/types/drive";
 import Link from "next/link";
 import { UploadButton } from "./uploadthing";
 import { useRouter } from "next/navigation";
-import { deleteFile, deleteFolder } from "~/server/actions";
 import { toast } from "react-hot-toast";
 import DialogNewFolder from "~/app/f/[folderId]/_components/dialog-folder";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { useState } from "react";
+import DialogDelete from "~/app/f/[folderId]/_components/dialog-delete";
 
 interface DriveContentProps {
   folders: DriveFolder[];
@@ -57,6 +57,7 @@ export function DriveContent({
 
   const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
   const [editingFolder, setEditingFolder] = useState<{ id: number; name: string } | null>(null);
+  const [deleteItem, setDeleteItem] = useState<{ type: "file" | "folder"; id: number; name: string } | null>(null);
 
   const formatFileSize = (size: number) => {
     if (size <= 0) {
@@ -197,40 +198,13 @@ export function DriveContent({
                               >
                                 Edit
                               </DropdownMenuItem>
+
                               <DropdownMenuItem
                                 className="text-destructive"
-                                onClick={async (e) => {
+                                onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  if (
-                                    window.confirm(
-                                      `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`,
-                                    )
-                                  ) {
-                                    try {
-                                      await deleteFolder(Number(folder.id));
-                                      toast.success(
-                                        `"${folder.name}" deleted successfully`,
-                                        {
-                                          style: {
-                                            borderRadius: "10px",
-                                            background: "#333",
-                                            color: "#fff",
-                                          },
-                                        },
-                                      );
-                                      navigation.refresh();
-                                    } catch (err) {
-                                      toast.error("Failed to delete folder", {
-                                        style: {
-                                          borderRadius: "10px",
-                                          background: "#333",
-                                          color: "#fff",
-                                        },
-                                      });
-                                      console.error(err);
-                                    }
-                                  }
+                                  setDeleteItem({ type: "folder", id: Number(folder.id), name: folder.name });
                                 }}
                               >
                                 Delete
@@ -271,38 +245,10 @@ export function DriveContent({
                         variant="ghost"
                         aria-label="Delete file"
                         size="icon"
-                        onClick={async (e) => {
+                        onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          if (
-                            window.confirm(
-                              `Are you sure you want to delete "${file.name}"? This action cannot be undone.`,
-                            )
-                          ) {
-                            try {
-                              await deleteFile(Number(file.id));
-                              navigation.refresh();
-                              toast.success(
-                                `"${file.name}" deleted successfully`,
-                                {
-                                  style: {
-                                    borderRadius: "10px",
-                                    background: "#333",
-                                    color: "#fff",
-                                  },
-                                },
-                              );
-                            } catch (err) {
-                              toast.error("Failed to delete file", {
-                                style: {
-                                  borderRadius: "10px",
-                                  background: "#333",
-                                  color: "#fff",
-                                },
-                              });
-                              console.error(err);
-                            }
-                          }
+                          setDeleteItem({ type: "file", id: Number(file.id), name: file.name });
                         }}
                       >
                         <Trash2 className="text-destructive h-4 w-4" />
@@ -313,7 +259,9 @@ export function DriveContent({
               </tbody>
             </table>
 
+            {/* Mobile View */}
             <div className="space-y-3 md:hidden">
+              {/* Folders */}
               {folders.map(
                 (folder) =>
                   folder.id !== BigInt(currentFolderId) && (
@@ -355,38 +303,10 @@ export function DriveContent({
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive"
-                              onClick={async (e) => {
+                              onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                if (
-                                  window.confirm(
-                                    `Are you sure you want to delete "${folder.name}"? This action cannot be undone.`,
-                                  )
-                                ) {
-                                  try {
-                                    await deleteFolder(Number(folder.id));
-                                    toast.success(
-                                      `"${folder.name}" deleted successfully`,
-                                      {
-                                        style: {
-                                          borderRadius: "10px",
-                                          background: "#333",
-                                          color: "#fff",
-                                        },
-                                      },
-                                    );
-                                    navigation.refresh();
-                                  } catch (err) {
-                                    toast.error("Failed to delete folder", {
-                                      style: {
-                                        borderRadius: "10px",
-                                        background: "#333",
-                                        color: "#fff",
-                                      },
-                                    });
-                                    console.error(err);
-                                  }
-                                }
+                                setDeleteItem({ type: "folder", id: Number(folder.id), name: folder.name });
                               }}
                             >
                               Delete
@@ -405,6 +325,7 @@ export function DriveContent({
                   ),
               )}
 
+              {/* Files */}
               {files.map((file) => (
                 <div
                   key={file.id}
@@ -426,38 +347,10 @@ export function DriveContent({
                       size="icon"
                       aria-label="Delete file"
                       className="h-8 w-8"
-                      onClick={async (e) => {
+                      onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (
-                          window.confirm(
-                            `Are you sure you want to delete "${file.name}"? This action cannot be undone.`,
-                          )
-                        ) {
-                          try {
-                            await deleteFile(Number(file.id));
-                            navigation.refresh();
-                            toast.success(
-                              `"${file.name}" deleted successfully`,
-                              {
-                                style: {
-                                  borderRadius: "10px",
-                                  background: "#333",
-                                  color: "#fff",
-                                },
-                              },
-                            );
-                          } catch (err) {
-                            toast.error("Failed to delete file", {
-                              style: {
-                                borderRadius: "10px",
-                                background: "#333",
-                                color: "#fff",
-                              },
-                            });
-                            console.error(err);
-                          }
-                        }
+                        setDeleteItem({ type: "file", id: Number(file.id), name: file.name });
                       }}
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
@@ -499,6 +392,13 @@ export function DriveContent({
             initName={editingFolder.name}
             setOpenDialog={(open) => !open && setEditingFolder(null)}
           />
+        )}
+      </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={!!deleteItem} onOpenChange={(open) => !open && setDeleteItem(null)}>
+        {deleteItem && (
+          <DialogDelete itemType={deleteItem.type} itemId={deleteItem.id} itemName={deleteItem.name} setOpenDialog={(open) => !open && setDeleteItem(null)} />
         )}
       </Dialog>
     </main>
