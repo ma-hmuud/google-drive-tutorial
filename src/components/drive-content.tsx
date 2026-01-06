@@ -134,7 +134,7 @@ export function DriveContent({
       </div>
 
       {/* Content Area */}
-      <div className="px-4 py-4  sm:px-6">
+      <div className="flex-1 overflow-y-auto px-4 py-4 pb-24 sm:px-6">
         {folders.length === 0 && files.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
@@ -366,8 +366,12 @@ export function DriveContent({
             </div>
           </>
         )}
+      </div>
+
+      {/* Upload Button - Fixed Position */}
+      <div className="absolute bottom-6 left-1/2 z-10 w-full max-w-sm -translate-x-1/2 px-4">
         <UploadButton
-          className="mx-auto my-10 w-full max-w-sm"
+          className="w-full"
           endpoint="driveUploader"
           input={{ folderId: currentFolderId }}
           onClientUploadComplete={() => {
