@@ -30,7 +30,7 @@ function getFolders(folderId: bigint) {
     .select()
     .from(foldersTable)
     .where(eq(foldersTable.parent, folderId))
-    .orderBy(foldersTable.id);
+    .orderBy(foldersTable.name);
 }
 
 function getFoldersWithSearch(ownerId: string, search?: string) {
@@ -43,7 +43,7 @@ function getFoldersWithSearch(ownerId: string, search?: string) {
         search ? like(foldersTable.name, `%${search}%`) : undefined,
       ),
     )
-    .orderBy(foldersTable.id);
+    .orderBy(foldersTable.name);
 }
 
 function getFiles(folderId: bigint) {
@@ -51,7 +51,7 @@ function getFiles(folderId: bigint) {
     .select()
     .from(filesTable)
     .where(eq(filesTable.parent, folderId))
-    .orderBy(filesTable.id);
+    .orderBy(filesTable.name);
 }
 
 function getFilesWithSearch(ownerId: string, search?: string) {
@@ -64,7 +64,7 @@ function getFilesWithSearch(ownerId: string, search?: string) {
         search ? like(filesTable.name, `%${search}%`) : undefined,
       ),
     )
-    .orderBy(filesTable.id);
+    .orderBy(filesTable.name);
 }
 
 function getFolderById(folderId: bigint) {
