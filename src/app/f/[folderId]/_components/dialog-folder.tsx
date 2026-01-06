@@ -13,8 +13,10 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { createFolderAction, editFolderAction } from "~/server/actions";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useTransition } from "react";
+import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 type FolderFormState = {
   error?: string;
@@ -25,6 +27,17 @@ type FolderFormState = {
 };
 
 const initialState: FolderFormState = { error: undefined, success: undefined };
+
+function SubmitButton({ initName, isTransitioning }: { initName?: string; isTransitioning: boolean }) {
+  const { pending } = useFormStatus();
+  const isLoading = pending || isTransitioning;
+
+  return (
+    <Button type="submit" disabled={isLoading}>
+      {isLoading ? <Loader2 className="size-4 animate-spin" /> : initName ? "Save Changes" : "Create Folder"}
+    </Button>
+  );
+}
 
 export default function DialogFolder({
   folderId,
@@ -38,6 +51,8 @@ export default function DialogFolder({
   editFolderId?: number;
 }) {
   const router = useRouter();
+  const [isTransitioning, startTransition] = useTransition();
+
   const [state, formAction] = useActionState<FolderFormState, FormData>(
     (_prevState: FolderFormState, formData: FormData) =>
       initName && editFolderId
@@ -61,7 +76,10 @@ export default function DialogFolder({
         },
       },
     );
-    router.refresh();
+
+    startTransition(() => {
+      router.refresh();
+    });
   }, [state.success, router, initName, setOpenDialog]);
 
   return (
@@ -72,7 +90,7 @@ export default function DialogFolder({
             {initName ? "Edit Folder" : "Create a new folder"}
           </DialogTitle>
           <DialogDescription>
-            Give your folder a clear, concise name so it’s easy to spot later.
+            Give your folder a clear, concise name so it&apos;s easy to spot later.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
@@ -84,6 +102,7 @@ export default function DialogFolder({
               placeholder="ex: Documents"
               autoComplete="off"
               defaultValue={initName}
+              disabled={isTransitioning}
             />
           </div>
         </div>
@@ -94,11 +113,9 @@ export default function DialogFolder({
         )}
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" disabled={isTransitioning}>Cancel</Button>
           </DialogClose>
-          <Button type="submit">
-            {initName ? "Save Changes" : "Create Folder"}
-          </Button>
+          <SubmitButton initName={initName} isTransitioning={isTransitioning} />
         </DialogFooter>
       </form>
     </DialogContent>
