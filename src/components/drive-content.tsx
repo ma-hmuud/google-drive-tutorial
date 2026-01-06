@@ -9,6 +9,7 @@ import {
   FileArchive,
   MoreVertical,
   Trash2,
+  FolderPlus,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,7 +23,9 @@ import { UploadButton } from "./uploadthing";
 import { useRouter } from "next/navigation";
 import { deleteFile, deleteFolder } from "~/server/actions";
 import { toast } from "react-hot-toast";
-import DialogNewFolder from "~/app/f/[folderId]/_components/dialog-new-folder";
+import DialogNewFolder from "~/app/f/[folderId]/_components/dialog-folder";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import { useState } from "react";
 
 interface DriveContentProps {
   folders: DriveFolder[];
@@ -51,6 +54,9 @@ export function DriveContent({
     }
     return <FileText className="text-muted-foreground h-5 w-5" />;
   };
+
+  const [openNewFolderDialog, setOpenNewFolderDialog] = useState(false);
+  const [editingFolder, setEditingFolder] = useState<{ id: number; name: string } | null>(null);
 
   const formatFileSize = (size: number) => {
     if (size <= 0) {
@@ -98,7 +104,18 @@ export function DriveContent({
             </div>
           ))}
         </div>
-        <DialogNewFolder folderId={currentFolderId} />
+        <Dialog open={openNewFolderDialog} onOpenChange={setOpenNewFolderDialog}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="bg-secondary hover:bg-secondary/80 h-10 w-full cursor-pointer gap-2 text-sm sm:size-auto sm:w-36"
+            >
+              <FolderPlus className="h-4 w-4" /> New Folder
+            </Button>
+          </DialogTrigger>
+          <DialogNewFolder folderId={currentFolderId} setOpenDialog={setOpenNewFolderDialog} />
+        </Dialog>
       </div>
 
       {/* Table Header */}
@@ -116,7 +133,7 @@ export function DriveContent({
       </div>
 
       {/* Content Area */}
-      <div className="px-4 py-4 sm:px-6">
+      <div className="px-4 py-4  sm:px-6">
         {folders.length === 0 && files.length === 0 ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
@@ -172,10 +189,10 @@ export function DriveContent({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() => {
-                                  navigation.push(
-                                    `/f/${folder.id}/edit-folder`,
-                                  );
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setEditingFolder({ id: Number(folder.id), name: folder.name });
                                 }}
                               >
                                 Edit
@@ -327,9 +344,12 @@ export function DriveContent({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-32">
                             <DropdownMenuItem
-                              onClick={() =>
-                                navigation.push(`/f/${folder.id}/edit-folder`)
-                              }
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setEditingFolder({ id: Number(folder.id), name: folder.name });
+                              }}
                             >
                               Edit
                             </DropdownMenuItem>
@@ -469,6 +489,18 @@ export function DriveContent({
           }}
         />
       </div>
+
+      {/* Edit Folder Dialog */}
+      <Dialog open={!!editingFolder} onOpenChange={(open) => !open && setEditingFolder(null)}>
+        {editingFolder && (
+          <DialogNewFolder
+            folderId={currentFolderId}
+            editFolderId={editingFolder.id}
+            initName={editingFolder.name}
+            setOpenDialog={(open) => !open && setEditingFolder(null)}
+          />
+        )}
+      </Dialog>
     </main>
   );
 }
