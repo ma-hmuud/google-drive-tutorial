@@ -1,0 +1,252 @@
+# MA Drive Tutorial - Project Rules
+
+## Project Overview
+This is a Google Drive-style application built with Next.js 16, featuring file uploads, folder management, and user authentication. The project uses modern React patterns with Server Components and client-side interactivity where needed.
+
+## Tech Stack
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript (strict mode)
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 4 with shadcn/ui components
+- **Authentication**: Clerk
+- **Database**: Drizzle ORM with SQL database (SingleStore/MySQL)
+- **File Uploads**: UploadThing
+- **Icons**: lucide-react
+- **Notifications**: react-hot-toast
+- **Forms**: react-hook-form with zod validation
+- **Package Manager**: pnpm
+
+## Code Style & Conventions
+
+### TypeScript
+- Use strict TypeScript with `noUncheckedIndexedAccess` enabled
+- Always define explicit types for props, function returns, and complex objects
+- Use interfaces for object shapes (e.g., `DriveFile`, `DriveFolder`)
+- Avoid `any` - use `unknown` if type is truly unknown
+- Leverage type inference where it improves readability
+
+### File Organization
+- Use `~/*` path alias for imports (maps to `src/*`)
+- Client components must have `"use client"` directive at the top
+- Server components are the default - don't add "use server" unless in server actions
+- Place components in `src/components/` with subdirectories for feature grouping
+- UI primitives go in `src/components/ui/`
+- Types go in `src/types/`
+- Server actions and database queries go in `src/server/`
+
+### React Best Practices
+- Prefer Server Components by default
+- Use Client Components only when needed (interactivity, hooks, browser APIs)
+- Use `useMemo` for expensive computations
+- Use `useCallback` for event handlers passed to child components
+- Avoid inline function definitions in JSX when passed as props
+- Use `React.memo()` sparingly and only for components with expensive renders
+
+### Component Structure
+```typescript
+"use client"; // Only if needed
+
+import { /* shadcn/ui components */ } from "~/components/ui/...";
+import { /* lucide icons */ } from "lucide-react";
+import { /* external libs */ } from "...";
+import { /* local types */ } from "~/types/...";
+import { /* local components */ } from "...";
+
+interface ComponentProps {
+  // Props definition
+}
+
+export function Component({ prop1, prop2 }: ComponentProps) {
+  // Hooks first
+  const [state, setState] = useState();
+
+  // Memoized values
+  const computed = useMemo(() => { }, [deps]);
+
+  // Callbacks
+  const handleAction = useCallback(() => { }, [deps]);
+
+  // Effects last
+  useEffect(() => { }, [deps]);
+
+  return (
+    // JSX
+  );
+}
+```
+
+### Naming Conventions
+- Components: PascalCase (e.g., `DriveContent`, `DialogNewFolder`)
+- Files: kebab-case for components (e.g., `drive-content.tsx`)
+- Hooks: camelCase with `use` prefix (e.g., `useFileUpload`)
+- Constants: UPPER_SNAKE_CASE for true constants
+- Functions/variables: camelCase
+- Types/Interfaces: PascalCase with descriptive names
+
+### Styling with Tailwind
+- Use Tailwind utility classes - avoid custom CSS when possible
+- Use `cn()` from `~/lib/utils` to merge class names conditionally
+- Follow this order: layout → spacing → sizing → typography → colors → effects
+- Use semantic color tokens: `text-foreground`, `bg-background`, `border-border`, etc.
+- Prefer `shrink-0` over `flex-shrink-0` (modern Tailwind v4 syntax)
+- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
+
+### Accessibility (a11y)
+- Always add `aria-label` to icon-only buttons
+- Use semantic HTML elements (`<nav>`, `<main>`, `<button>`, etc.)
+- Add `aria-hidden="true"` to decorative icons
+- Include proper `aria-current` for breadcrumbs
+- Ensure keyboard navigation with focus rings (use `focus:ring-2`)
+- Add descriptive labels for form inputs
+- Use `rel="noopener noreferrer"` for external links with `target="_blank"`
+
+### Database & Server Actions
+- Use Drizzle ORM for all database queries
+- Server actions should be in separate files in `src/server/`
+- Always validate input with zod schemas
+- Handle errors gracefully with try-catch
+- Return type-safe results from server actions
+- Use transactions for multi-step database operations
+
+### State Management
+- Use URL state for navigation (e.g., folder IDs in route params)
+- Use React state for UI-only state (modals, forms, local filters)
+- Use `useRouter().refresh()` to refetch server data after mutations
+- Avoid prop drilling - use composition or context when needed
+
+### Forms & Validation
+- Use `react-hook-form` with `@hookform/resolvers/zod`
+- Define zod schemas for all form data
+- Show validation errors inline
+- Disable submit buttons during submission
+- Clear forms after successful submission
+
+### Error Handling
+- Use toast notifications for user feedback
+- Show loading states during async operations
+- Handle edge cases (empty states, no results, etc.)
+- Provide helpful error messages
+- Log errors to console in development
+
+### Performance
+- Memoize expensive computations with `useMemo`
+- Memoize callbacks with `useCallback`
+- Use dynamic imports for large components
+- Optimize images with Next.js Image component
+- Avoid unnecessary re-renders
+
+### File Uploads (UploadThing)
+- Use `UploadButton` or `UploadDropzone` components
+- Pass `folderId` in the `input` prop
+- Refresh router on `onClientUploadComplete`
+- Show toast notifications for upload success/failure
+- Handle file size and type restrictions
+
+### Testing & Quality
+- Run `pnpm lint` before committing
+- Run `pnpm typecheck` to catch TypeScript errors
+- Use Prettier for code formatting (auto-format on save)
+- Keep components small and focused (single responsibility)
+- Write self-documenting code with clear naming
+
+## Common Patterns
+
+### Dialogs/Modals
+```typescript
+const [isOpen, setIsOpen] = useState(false);
+
+<Dialog open={isOpen} onOpenChange={setIsOpen}>
+  <DialogTrigger asChild>
+    <Button>Open</Button>
+  </DialogTrigger>
+  <DialogContent>
+    {/* Content */}
+  </DialogContent>
+</Dialog>
+```
+
+### Server Actions
+```typescript
+"use server";
+
+import { auth } from "@clerk/nextjs/server";
+import { db } from "~/server/db";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().min(1),
+});
+
+export async function createFolder(data: unknown) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const validated = schema.parse(data);
+
+  // Database operation
+  const result = await db.insert(folders).values({...});
+
+  return result;
+}
+```
+
+### Conditional Rendering
+- Use early returns for empty/loading states
+- Use ternary for simple conditions
+- Use `&&` for single condition rendering
+- Avoid deeply nested ternaries
+
+## Project-Specific Conventions
+
+### Folder/File Structure
+- Files and folders have `parent` relationships (nullable for root)
+- Use `bigint` for IDs from database
+- Convert to `Number()` when needed for calculations
+- Filter out current folder from its own listing
+
+### Icons
+- Use lucide-react for all icons
+- Apply consistent sizing: `h-4 w-4` or `h-5 w-5`
+- Add colors with semantic tokens or specific colors for file types
+- Always include `aria-hidden="true"` for decorative icons
+
+### Toasts
+- Use react-hot-toast for all notifications
+- Style consistently: `{ borderRadius: "10px", background: "#333", color: "#fff" }`
+- Show success toasts for: uploads, creates, updates, deletes
+- Keep messages concise and actionable
+
+### Date Formatting
+- Show relative dates for recent items ("Today", "Yesterday", "X days ago")
+- Fall back to `MM/DD/YYYY` for older dates
+- Use consistent formatting across the app
+
+### Empty States
+- Always provide empty states with helpful messages
+- Include relevant icons (e.g., FolderIcon, Search)
+- Guide users to next action
+
+## Don't Do This
+- ❌ Don't use `any` type
+- ❌ Don't forget "use client" directive for client components
+- ❌ Don't inline styles (use Tailwind)
+- ❌ Don't forget to memoize expensive operations
+- ❌ Don't forget accessibility attributes
+- ❌ Don't use `flex-shrink-0` (use `shrink-0`)
+- ❌ Don't forget to refresh router after mutations
+- ❌ Don't create custom hooks without the `use` prefix
+- ❌ Don't commit without running linter
+- ❌ Don't use absolute imports without `~` alias
+
+## AI Assistant Guidelines
+When helping with this project:
+1. Always follow the tech stack and patterns above
+2. Write TypeScript with proper types
+3. Use existing shadcn/ui components
+4. Follow accessibility best practices
+5. Suggest performance optimizations when relevant
+6. Keep code DRY but readable
+7. Add helpful comments for complex logic
+8. Consider mobile responsiveness
+9. Handle edge cases and errors
+10. Maintain consistency with existing code style
