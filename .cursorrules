@@ -83,13 +83,22 @@ export function Component({ prop1, prop2 }: ComponentProps) {
 - Functions/variables: camelCase
 - Types/Interfaces: PascalCase with descriptive names
 
-### Styling with Tailwind
-- Use Tailwind utility classes - avoid custom CSS when possible
-- Use `cn()` from `~/lib/utils` to merge class names conditionally
-- Follow this order: layout → spacing → sizing → typography → colors → effects
-- Use semantic color tokens: `text-foreground`, `bg-background`, `border-border`, etc.
-- Prefer `shrink-0` over `flex-shrink-0` (modern Tailwind v4 syntax)
-- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
+### Styling with Tailwind v4
+- Use Tailwind v4 features:
+  - `@theme` blocks for theme configuration in CSS
+  - `@import "tailwindcss"` in `globals.css`
+  - `oklch()` color function for vibrant, modern color palettes
+- **Design Principles**:
+  - **Premium Aesthetic**: Aim for a polished, high-end look (glassmorphism, subtle borders, smooth transitions).
+  - **Vibrant Colors**: Use the defined `oklch` variables. Avoid dull/default browser colors.
+  - **Depth**: Use varying levels of background opacity and blur (backdrop-filter) for depth.
+- Use `cn()` from `~/lib/utils` to merge class names.
+- Follow specific variable usage:
+  - `--sidebar-*` variables for sidebar specific theming
+  - `--background`/`--foreground` for main content
+  - `--chart-*` for data visualization colors
+- Responsive design: Use `sm:`, `md:`, `lg:`, `xl:` prefixes.
+- Animation: Use `tailwindcss-animate` utility classes (e.g., `animate-in`, `fade-in`).
 
 ### Accessibility (a11y)
 - Always add `aria-label` to icon-only buttons
