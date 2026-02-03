@@ -11,9 +11,9 @@ export default function DriveContents(props: {
   currentFolderId: number
 }) {
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-screen flex-col bg-background font-sans">
       <DriveHeader />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         <DriveContent
           folders={props.folders}
           files={props.files}

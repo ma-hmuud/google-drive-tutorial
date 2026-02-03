@@ -42,7 +42,7 @@ export default function SearchInput() {
     <Input
       type="search"
       placeholder="Search in Drive"
-      className="bg-secondary w-full pl-10"
+      className="bg-secondary/50 focus-visible:bg-secondary focus-visible:ring-primary/30 w-full rounded-full border-border/50 px-4 pl-10 shadow-sm transition-all duration-300 hover:bg-secondary/80 focus-visible:shadow-md"
       onChange={onSearch}
       value={search}
     />
